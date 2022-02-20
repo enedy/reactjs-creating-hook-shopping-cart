@@ -7,6 +7,11 @@ export const ProductList = styled.ul`
   grid-gap: 20px;
   list-style: none;
 
+  .teste{
+    color: red;
+    font-size: 22px;
+  }
+
   li {
     display: flex;
     flex-direction: column;

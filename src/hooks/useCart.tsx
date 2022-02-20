@@ -1,7 +1,7 @@
-import { createContext, ReactNode, useContext, useState } from 'react';
-import { toast } from 'react-toastify';
-import { api } from '../services/api';
-import { Product, Stock } from '../types';
+import { createContext, ReactNode, useContext, useState } from "react";
+import { toast } from "react-toastify";
+import { api } from "../services/api";
+import { Product, Stock } from "../types";
 
 interface CartProviderProps {
   children: ReactNode;
@@ -23,20 +23,40 @@ const CartContext = createContext<CartContextData>({} as CartContextData);
 
 export function CartProvider({ children }: CartProviderProps): JSX.Element {
   const [cart, setCart] = useState<Product[]>(() => {
-    // const storagedCart = Buscar dados do localStorage
+    const storagedCart = localStorage.getItem("@RocketShoes:cart");
 
-    // if (storagedCart) {
-    //   return JSON.parse(storagedCart);
-    // }
+    if (storagedCart) {
+      return JSON.parse(storagedCart);
+    }
 
     return [];
   });
 
   const addProduct = async (productId: number) => {
     try {
-      // TODO
+      const productInCart = cart.findIndex(product => product.id === productId);
+      let newCart = [...cart];
+
+      if (productInCart !== -1) {
+        const { data: stock } = await api.get<Stock>(`stock/${productId}`);
+
+        if (cart[productInCart].amount >= stock.amount) {
+          toast.error('Estoque insuficiente');
+          return;
+        }
+
+        newCart[productInCart].amount += 1;
+        setCart(newCart);
+      } else {
+        const { data: product } = await api.get(`products/${productId}`);
+        newCart = [...cart, { ...product, amount: 1 }]
+        setCart(newCart);
+      }
+
+      localStorage.setItem('@RocketShoes:cart', JSON.stringify(newCart));
+      toast.success('Produto adicionado ao Carrinho');
     } catch {
-      // TODO
+      toast.error('Erro na adição do produto');
     }
   };
 
