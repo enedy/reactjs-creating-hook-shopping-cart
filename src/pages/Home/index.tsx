@@ -49,7 +49,6 @@ const Home = (): JSX.Element => {
   }, []);
 
   function handleAddProduct(id: number) {
-    console.log(`adicionou`);
     addProduct(id);
   }
 
@@ -60,13 +59,17 @@ const Home = (): JSX.Element => {
           <img src={product.image} alt={product.title} />
           <strong>{product.title}</strong>
           <span>{product.priceFormatted}</span>
-          <button type="button" onClick={() => handleAddProduct(product.id)}>
+          <button
+            type="button"
+            data-testid="add-product-button"
+            onClick={() => handleAddProduct(product.id)}
+          >
             <div data-testid="cart-product-quantity">
               <MdAddShoppingCart size={16} color="#FFF" />
               {cartItemsAmount[product.id] || 0}
             </div>
 
-            <span>ADICIONAR AO CARRINHOoo</span>
+            <span>ADICIONAR AO CARRINHO</span>
           </button>
         </li>
       ))}
